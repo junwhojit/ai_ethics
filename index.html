@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>인공지능의 사회적 영향</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 교과서 옆에 펴 두는 복습 노트. 좁은 한 단, 상단 고정 바(목차 + 암기 모드), 키워드는 형광펜, 암기 모드에서는 암기 시트로 가려짐 */
+:root{
+  --paper:#f6f8f7; --sheet:#ffffff; --ink:#1d2b2a; --muted:#5d6d6b; --line:#d8e0de;
+  --accent:#0f6b63; --accent-soft:#e2f0ed;
+  --mark:#fff0a3; --mask:#c8392f; --mask-ink:#ffffff;
+  --display:"Gowun Batang", "Nanum Myeongjo", serif;
+  --body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121a19; --sheet:#18211f; --ink:#e3ebe9; --muted:#9aaaa7; --line:#2c3a37;
+  --accent:#5cc2b6; --accent-soft:#1d3532; --mark:#5b4f12; --mask:#d9574c; --mask-ink:#ffffff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121a19; --sheet:#18211f; --ink:#e3ebe9; --muted:#9aaaa7; --line:#2c3a37;
+  --accent:#5cc2b6; --accent-soft:#1d3532; --mark:#5b4f12; --mask:#d9574c; --mask-ink:#ffffff; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--paper); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.75; word-break:keep-all}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--sheet)}
+
+.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--sheet); border-bottom:1px solid var(--line)}
+.bar-in{max-width:820px; margin:0 auto; padding-block:10px; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px}
+.bar nav{display:flex; gap:6px; flex-wrap:wrap; flex:1 1 auto; min-width:0}
+.bar nav a{font-size:14px; color:var(--ink); text-decoration:none; padding:4px 10px; border-radius:999px; border:1px solid var(--line)}
+.bar nav a:hover,.bar nav a:focus-visible{border-color:var(--accent); color:var(--accent); outline:none}
+.toggle{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; cursor:pointer; user-select:none}
+.toggle input{position:absolute; opacity:0; width:1px; height:1px}
+.sw{width:40px; height:22px; border-radius:999px; background:var(--line); position:relative; transition:background .2s}
+.sw::after{content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--sheet); transition:transform .2s}
+.toggle input:checked + .sw{background:var(--mask)}
+.toggle input:checked + .sw::after{transform:translateX(18px)}
+.toggle input:focus-visible + .sw{outline:2px solid var(--accent); outline-offset:2px}
+.reveal-all{font:inherit; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; padding:0}
+
+main{max-width:820px; margin:0 auto; padding-block:28px 64px; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.hero{padding-block:8px 24px; border-bottom:2px solid var(--ink); margin-bottom:28px}
+.eyebrow{font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--accent)}
+h1{font-family:var(--display); font-size:clamp(30px,6vw,44px); line-height:1.25; margin:6px 0 12px; text-wrap:balance}
+.hero p{margin:0; color:var(--muted); max-width:62ch}
+.howto{margin-top:16px; font-size:14px; background:var(--accent-soft); border-radius:8px; padding:10px 14px}
+
+section.unit{margin-top:48px}
+.unit-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:8px}
+.unit-no{font-family:var(--display); font-size:40px; line-height:1; color:var(--accent)}
+h2{font-family:var(--display); font-size:26px; margin:0; text-wrap:balance}
+.range{font-family:var(--mono); font-size:13px; color:var(--muted); margin-left:auto}
+.goal{font-size:14px; color:var(--muted); margin:10px 0 0}
+h3{font-size:18px; margin:32px 0 8px; display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline; text-wrap:balance}
+p{margin:8px 0; max-width:68ch}
+ul,ol{padding-left:1.3em; margin:8px 0}
+li{margin:4px 0}
+li::marker{color:var(--accent)}
+
+.pg{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--accent); border:1px solid var(--accent); border-radius:4px; padding:0 5px; white-space:nowrap; vertical-align:2px}
+
+/* 형광펜 키워드 */
+.k{font-weight:700; background:linear-gradient(transparent 55%, var(--mark) 55%); padding:0 1px; border-radius:2px}
+body.study .k{background:var(--mask); color:transparent; cursor:pointer; transition:background .15s}
+body.study .k:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+body.study .k.open{background:linear-gradient(transparent 55%, var(--mark) 55%); color:inherit}
+
+.box{background:var(--sheet); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:12px 0}
+.box-title{font-size:13px; font-weight:700; color:var(--accent); margin-bottom:4px; letter-spacing:.02em}
+
+.tw{overflow-x:auto; margin:12px 0; border:1px solid var(--line); border-radius:10px; background:var(--sheet)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:15px}
+th,td{text-align:left; vertical-align:top; padding:10px 12px; border-bottom:1px solid var(--line)}
+th{font-size:13px; color:var(--muted); font-weight:500; background:var(--paper)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:700; white-space:nowrap}
+
+/* 발전사 연표 */
+.tl{list-style:none; padding:0; margin:12px 0; border-left:2px solid var(--line)}
+.tl li{position:relative; padding:4px 0 10px 18px; margin:0}
+.tl li::before{content:""; position:absolute; left:-6px; top:12px; width:10px; height:10px; border-radius:50%; background:var(--sheet); border:2px solid var(--accent)}
+.tl li.era::before{background:var(--accent)}
+.tl .yr{font-family:var(--mono); font-size:13px; color:var(--accent); margin-right:8px}
+.tl .era-name{font-size:13px; font-weight:700; color:var(--muted)}
+
+.levels{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:6px; margin:12px 0}
+.lv{background:var(--sheet); border:1px solid var(--line); border-radius:8px; padding:8px 6px; text-align:center; font-size:13px; line-height:1.4}
+.lv b{display:block; font-family:var(--mono); font-size:18px}
+.lv.auto{border-color:var(--accent); background:var(--accent-soft)}
+.levels-note{font-size:13px; color:var(--muted)}
+@media (max-width:560px){.levels{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.roles{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:12px 0}
+.role{background:var(--sheet); border:1px solid var(--line); border-radius:10px; padding:12px 14px; min-width:0; font-size:15px}
+.role h4{margin:0 0 6px; font-size:15px; color:var(--accent)}
+.role ul{margin:0}
+@media (max-width:640px){.roles{grid-template-columns:1fr}}
+
+.vs{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0}
+.vs > div{background:var(--sheet); border:1px solid var(--line); border-radius:10px; padding:12px 14px; min-width:0}
+.vs h4{margin:0 0 4px; font-size:15px}
+@media (max-width:560px){.vs{grid-template-columns:1fr}}
+
+.summary{border-top:2px solid var(--ink); margin-top:28px; padding-top:10px}
+.summary .box-title{color:var(--ink)}
+footer{margin-top:56px; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:12px}
+
+@media print{
+  @page{margin:14mm}
+  :root{--paper:#fff; --sheet:#fff; --ink:#000; --muted:#444; --line:#bbb; --accent:#0f6b63; --accent-soft:#eef5f3; --mark:#fff0a3}
+  .bar,.howto{display:none}
+  body{font-size:11pt; line-height:1.6}
+  body.study .k{background:linear-gradient(transparent 55%, var(--mark) 55%); color:inherit}
+  main{max-width:none; padding:0}
+  section.unit{break-before:page; margin-top:0}
+  .box,.tw,.role,.tl li,.lv,.vs > div{break-inside:avoid}
+  .tw{overflow:visible}
+  table{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-in">
+    <nav aria-label="목차">
+      <a href="#overview">개요</a>
+      <a href="#u1">01 사회 변화</a>
+      <a href="#u2">02 진로</a>
+      <a href="#u3">03 윤리</a>
+    </nav>
+    <label class="toggle" for="study">
+      <input type="checkbox" id="study">
+      <span class="sw" aria-hidden="true"></span>
+      암기 모드
+    </label>
+    <button type="button" class="reveal-all" id="resetBtn" hidden>다시 가리기</button>
+  </div>
+</div>
+
+<main>
+  <header class="hero" id="overview">
+    <div class="eyebrow">인공지능 기초 · Ⅲ단원 · 교과서 156~193쪽</div>
+    <h1>인공지능의 사회적 영향</h1>
+    <p>인공지능이 사회에 끼치는 영향이 커지면서 직업이 바뀌는 속도도 빨라지고 있다. 인공지능을 올바르게 활용하려면 인공지능 때문에 생길 수 있는 윤리적 문제를 이해해야 한다. <span class="pg">p.156</span></p>
+    <div class="howto"><b>공부하는 법</b> · 형광펜 친 말이 시험에 나올 핵심어예요. 위의 <b>암기 모드</b>를 켜면 핵심어가 가려지고, 가려진 칸을 누르면 하나씩 보여요. 회색 네모 안 숫자는 교과서 쪽수예요.</div>
+  </header>
+
+  <!-- 01 -->
+  <section class="unit" id="u1">
+    <div class="unit-head"><span class="unit-no">01</span><h2>인공지능과 사회 변화</h2><span class="range">p.158–167</span></div>
+    <p class="goal">학습 목표: 인공지능의 발전으로 인한 사회 변화를 설명할 수 있다. 인공지능으로 해결할 수 있는 사회 문제를 분석할 수 있다.</p>
+
+    <h3>인공지능의 시작 <span class="pg">p.159</span></h3>
+    <ul>
+      <li>1950년 <span class="k">앨런 튜링</span>이 지능이 있는 기계에 관한 아이디어를 제안했다.</li>
+      <li>1956년 <span class="k">다트머스 회의</span>에서 <span class="k">존 매카시</span>가 ‘인공지능’이라는 용어를 처음 제안했다.</li>
+      <li>과거 기계는 인간의 육체노동을 대신했지만, 이제 인공지능은 인식·판단·학습·추론·문제 해결 같은 <span class="k">지적 능력</span>까지 수행한다. 그래서 삶의 양식이 바뀌고 새로운 산업이 생겨난다.</li>
+    </ul>
+
+    <h3>인공지능 발전의 기반이 되는 기술 <span class="pg">p.159</span></h3>
+    <div class="tw"><table>
+      <thead><tr><th>기술</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td><span class="k">클라우드 컴퓨팅</span></td><td>인터넷을 기반으로 가상화된 소프트웨어, 서버, 네트워크, 저장 공간 등 IT 자원을 서비스로 제공하는 컴퓨팅 환경. 비교적 싼 비용으로 연산 능력을 높이고 자원을 쉽게 추가·변경할 수 있다.</td></tr>
+        <tr><td><span class="k">빅데이터</span></td><td>대용량의 데이터를 활용·분석하여 가치 있는 정보를 추출하고, 이 지식으로 변화를 예측하거나 대응하는 정보화 기술. 예: IBM 왓슨(2011년 제퍼디 퀴즈 쇼 우승)</td></tr>
+        <tr><td><span class="k">사물 인터넷</span></td><td>사물과 사물이 인터넷으로 연결되어 정보를 주고받는 기술. CCTV, 자동차, 웨어러블 기기, 가전 기기에서 데이터를 수집한다.</td></tr>
+        <tr><td>인터넷 및 모바일 컴퓨팅</td><td>수집한 데이터를 인터넷, 이동 통신, 와이파이로 전송한다.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>인공지능 사회의 세 가지 특징 <span class="pg">p.160–161</span></h3>
+    <div class="tw"><table>
+      <thead><tr><th>특징</th><th>뜻</th><th>교과서 사례</th></tr></thead>
+      <tbody>
+        <tr><td><span class="k">초지능</span> 사회</td><td>인간 수준 이상의 지능을 가진 인공지능이 개발되어, 인간이 인공지능의 도움으로 최적의 의사 결정을 한다.</td><td>질병 진단 시스템, 산재 사고 예방 시스템, 교통 신호 최적화</td></tr>
+        <tr><td><span class="k">초연결</span> 사회</td><td>정보 기술을 바탕으로 인간·기계·사물·공간이 유기적으로 연결되어 상호 작용한다.</td><td>디지털 트윈, 스마트홈, 이미지 인식 실시간 번역</td></tr>
+        <tr><td><span class="k">초융합</span> 사회</td><td>인공지능이 빅데이터·사물 인터넷 등의 기술, 여러 학문·산업과 결합해 새로운 분야를 만든다.</td><td>스마트 공장, 스마트팜, 로보어드바이저</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><span class="k">디지털 트윈</span>: 컴퓨터에 현실 사물의 쌍둥이를 만들어 상황을 시뮬레이션하고 결과를 미리 예측하는 기술 <span class="pg">p.160</span></li>
+      <li>리걸테크(법률), 핀테크(금융), 스마트팜(농업): 각 분야와 정보 통신 기술이 만나 새로운 가치를 만든다. <span class="pg">p.160</span></li>
+      <li><span class="k">로보어드바이저</span>: 고객의 투자 성향을 파악해 자산을 구성해 주는 자동화된 자산 관리 서비스 <span class="pg">p.161</span></li>
+    </ul>
+
+    <h3>인공지능 발전사 <span class="pg">p.162–163</span></h3>
+    <ol class="tl">
+      <li><span class="yr">1943</span>매컬러·피츠: 뇌신경 세포의 활동을 스위치 네트워크로 표현</li>
+      <li><span class="yr">1949</span><span class="k">헵의 규칙</span>: 자극받은 뉴런의 연결은 강해지고, 그렇지 않은 연결은 약해진다</li>
+      <li><span class="yr">1950</span>튜링이 기계에 지능이 있는지 판별하는 <span class="k">튜링 테스트</span> 제안</li>
+      <li><span class="yr">1956</span>다트머스 회의, ‘인공지능’ 용어 등장</li>
+      <li class="era"><span class="era-name">첫 번째 전성기</span></li>
+      <li><span class="yr">1958</span>로젠블랫의 <span class="k">퍼셉트론</span>: 뇌 구조를 모방한 신경망 모델, 딥러닝의 원조</li>
+      <li><span class="yr">1966</span><span class="k">엘리자</span>: 최초의 대화형 프로그램</li>
+      <li class="era"><span class="yr">1974</span><span class="era-name">첫 번째 암흑기</span> 기대한 결과가 나오지 않아 투자 중단</li>
+      <li class="era"><span class="yr">1980</span><span class="era-name">두 번째 전성기</span> <span class="k">전문가 시스템</span> 도입(예: 마이신 MYCIN)</li>
+      <li class="era"><span class="yr">1987</span><span class="era-name">두 번째 암흑기</span> 관리가 비효율적이고 유지·보수가 어려움</li>
+      <li><span class="yr">1997</span>IBM 딥 블루, 체스 세계 챔피언에게 승리</li>
+      <li class="era"><span class="yr">2006</span><span class="era-name">세 번째 전성기</span> 제프리 힌턴의 <span class="k">딥러닝</span>: 은닉층이 여러 개인 심층 신경망</li>
+      <li><span class="yr">2011</span>IBM 왓슨, 제퍼디 퀴즈 쇼 우승</li>
+      <li><span class="yr">2012</span>구글 브레인, 이미지넷 대회의 알렉스넷</li>
+      <li><span class="yr">2016</span>알파고, 이세돌과의 대국에서 4승 1패 · <span class="yr">2017</span>알파고 제로, 알파고에 100전 100승</li>
+      <li><span class="yr">2020</span>GPT-3 · <span class="yr">2021</span>DALL-E · <span class="yr">2023</span>GPT-4, 제미나이, 클로바 X</li>
+    </ol>
+    <div class="box"><div class="box-title">전문가 시스템의 구성</div>전문가의 지식을 정리해 컴퓨터에 저장한 시스템으로, <span class="k">지식 베이스</span> · <span class="k">추론 엔진</span> · <span class="k">사용자 인터페이스</span>로 이루어진다. <span class="pg">p.163</span></div>
+
+    <h3>인공지능으로 해결할 수 있는 사회 문제 <span class="pg">p.164–165</span></h3>
+    <ul>
+      <li>인공지능은 빅데이터를 활용해 <span class="k">예측과 분류</span>를 하며 문제 해결을 돕는다. 예: 재난 예측, 멸종 위기 동물 관찰, CCTV로 화재·하천 수위 감지와 범죄 예방</li>
+      <li><span class="k">지능 에이전트</span> 형태로 주변 환경을 인식하고 적절히 제어해 문제를 해결하기도 한다.</li>
+      <li>교통·물류, 의료·복지, 제조·금융, 치안·안전 분야에서 효과가 기대된다(우리나라 인공지능 국가전략).</li>
+    </ul>
+    <div class="box"><div class="box-title">인공지능의 한계</div>인공지능은 인간처럼 공감하거나 스스로 윤리적 판단을 내릴 수 없다. 프로그래밍된 규칙과 데이터에 따라 작동하므로, 사회 문제를 해결할 때는 인간의 도덕적 판단과 윤리적 가치를 고려하는 <span class="k">인간의 개입</span>이 필요하다. <span class="pg">p.164</span></div>
+
+  </section>
+
+  <!-- 02 -->
+  <section class="unit" id="u2">
+    <div class="unit-head"><span class="unit-no">02</span><h2>인공지능과 진로</h2><span class="range">p.168–177</span></div>
+    <p class="goal">학습 목표: 인공지능에 의해 변화하는 인간의 삶과 직업의 양상을 설명할 수 있다. 인공지능과 함께 하는 미래의 진로를 탐색할 수 있다.</p>
+
+    <h3>인간의 삶은 이렇게 바뀐다 <span class="pg">p.169–171</span></h3>
+    <ol>
+      <li><span class="k">자동화</span>로 인한 변화 <span class="pg">p.169</span><br>자율주행 자동차, 무인 배송 트럭, 서빙 로봇, 자율 비행 드론. 인간의 개입이 줄고, 이동 시간을 휴식·여가·생산적인 일에 쓸 수 있게 된다.</li>
+      <li>인간 능력의 한계 극복 <span class="pg">p.171</span><br>재활 로봇, 근력 보조 로봇. <span class="k">생성형 인공지능</span>은 기존 콘텐츠를 활용해 텍스트, 오디오, 이미지 등 유사한 콘텐츠를 새로 만들어 내는 기술로, 누구나 창의성을 표현할 수 있게 해 준다.</li>
+      <li><span class="k">개별 맞춤화</span> 서비스 <span class="pg">p.171</span><br>추천 알고리즘, 인공지능 디지털 교과서처럼 개인의 데이터를 바탕으로 맞춤 서비스를 제공한다.</li>
+    </ol>
+    <div class="vs">
+      <div><h4><span class="k">콘텐츠 필터링</span></h4>사용자가 좋아하는 콘텐츠를 분석해 <b>비슷한 콘텐츠</b>를 추천한다.</div>
+      <div><h4><span class="k">협업 필터링</span></h4><b>취향이 비슷한 다른 사용자</b>들의 정보를 모아 관심사를 예측한다.</div>
+    </div>
+
+    <h3>자율주행의 단계 <span class="pg">p.170</span></h3>
+    <p>미국자동차공학회(SAE)는 자율주행 기술을 0~5단계로 나눈다. <span class="k">3단계</span>부터 시스템이 운전의 주도권을 가지며, 3~5단계를 자율주행 자동차로 정의한다.</p>
+    <div class="levels">
+      <div class="lv"><b>0</b>비자동화</div>
+      <div class="lv"><b>1</b>운전자 보조</div>
+      <div class="lv"><b>2</b>부분 자동화</div>
+      <div class="lv auto"><b>3</b>조건부 자동화</div>
+      <div class="lv auto"><b>4</b>고도 자동화</div>
+      <div class="lv auto"><b>5</b>완전 자동화</div>
+    </div>
+    <p class="levels-note">색칠한 칸(3~5단계)이 자율주행 자동차예요. 가장 먼저 보편화될 분야로는 물류용 트럭이 꼽힌다.</p>
+
+    <h3>직업은 이렇게 바뀐다 <span class="pg">p.172</span></h3>
+    <ul>
+      <li>인공지능은 직업을 완전히 대체하지 않는다. <span class="k">데이터 기반 작업</span>이나 간단한 추론으로 처리할 수 있는 작업을 주로 대체한다. 예: 인공지능 변호사는 의뢰인을 고려한 종합적인 판단까지 대신하지 못한다.</li>
+      <li>세계경제포럼(2023)은 빅데이터 분석, 암호화 및 사이버 보안 기술이 일자리를 크게 늘릴 것으로 전망했다.</li>
+      <li>수요가 늘 직업: <span class="k">인공지능 및 기계학습 전문가</span>(약 40%), 데이터 분석가·과학자, 빅데이터 전문가, 비즈니스 인텔리전스 분석가, 정보 보안 전문가 등(30~35%)</li>
+    </ul>
+
+    <h3>진로 탐색과 준비 <span class="pg">p.173</span></h3>
+    <p>반복적이고 정형화된 일은 인공지능이 맡고, 인간은 <span class="k">창의력</span>과 고도의 전문성을 발휘하는 일에 집중하게 된다. 예: 교사는 인공지능의 맞춤 학습 추천을 검토하고 토의·프로젝트 수업과 상담에 집중한다.</p>
+    <div class="tw"><table>
+      <thead><tr><th>필요한 역량</th><th>왜 필요할까?</th></tr></thead>
+      <tbody>
+        <tr><td><span class="k">의사소통 능력</span></td><td>인공지능은 인간이 입력한 정보에만 의존하므로, 원하는 것을 정확히 표현하고 맥락을 제공해야 한다.</td></tr>
+        <tr><td><span class="k">비판적 사고력</span></td><td>인공지능의 결과가 늘 정확한 것은 아니므로 객관적으로 분석하고 판단해야 한다.</td></tr>
+        <tr><td><span class="k">협업 능력</span></td><td>창의성은 <span class="k">집단 지성</span>을 발휘할 때 더 잘 나타나므로 함께 공동의 목표를 이뤄야 한다.</td></tr>
+        <tr><td><span class="k">호기심</span></td><td>인공지능을 계속 써 보며 한계와 능력을 실험해야 제대로 활용할 수 있다.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="box"><div class="box-title">읽기 자료 · 긱 이코노미 <span class="pg">p.177</span></div><span class="k">긱 이코노미</span>는 ‘임시로 하는 일(gig)’과 ‘경제(economy)’를 합친 말로, 필요에 따라 일을 맡기고 구하는 경제 형태다. 한 직장에 속하지 않고 유연하게 일하는 긱 워커, 여러 직업을 갖는 N잡러가 늘고, 인재들의 재능 정보가 등록된 휴먼 클라우드 플랫폼이 활발해진다.</div>
+
+  </section>
+
+  <!-- 03 -->
+  <section class="unit" id="u3">
+    <div class="unit-head"><span class="unit-no">03</span><h2>인공지능과 윤리</h2><span class="range">p.178–191</span></div>
+    <p class="goal">학습 목표: 인공지능과 인간의 공존 방안을 제시할 수 있다. 인공지능의 활용 사례와 윤리적 딜레마 상황을 인공지능 윤리 관점에서 분석할 수 있다.</p>
+
+    <h3>인공지능과 인간의 공존 <span class="pg">p.179</span></h3>
+    <ul>
+      <li>새로 생길 수 있는 문제: <span class="k">개인 정보 보호</span>, 데이터 소유권, <span class="k">딥페이크</span>를 이용한 가짜뉴스, 인공지능 창작물의 <span class="k">저작권</span>, 결과에 대한 책임</li>
+      <li>인공지능이 아무리 똑똑해져도 도덕적·법적 책임을 질 수 있는 주체는 <span class="k">인간</span>이다. 그래서 무조건 거부하거나 무조건 받아들이지 말고, 결과를 충분히 검토하며 공존 방법을 고민해야 한다.</li>
+      <li><span class="k">마이데이터 운동</span>: 개인과 관련된 데이터의 소유권을 개인이 가져야 한다는 운동</li>
+      <li>생성형 인공지능을 쓸 때 주의할 점 <span class="pg">p.180</span>: 데이터셋이 최신이 아니면 잘못된 정보를 줄 수 있고, 질문에 따라 결과가 달라지므로 결과를 꼭 검토한다.</li>
+    </ul>
+
+    <h3>인공지능 윤리와 주체별 책임 <span class="pg">p.181</span></h3>
+    <p><span class="k">인공지능 윤리</span>란 인공지능을 개발·운영·활용할 때 지켜야 하는 윤리적 원칙이다.</p>
+    <div class="roles">
+      <div class="role"><h4>개발자</h4><ul><li>설계·개발·결과에 책임</li><li>개발자의 편견이 알고리즘에 들어가지 않게 설계</li><li>숨은 편향을 발견하고 고칠 방법 마련</li></ul></div>
+      <div class="role"><h4>사용자</h4><ul><li>인공지능의 소비 주체이자 사회적 논의의 참여 주체</li><li>책임 범위에 대한 규정과 사회적 합의 필요</li><li>“인공지능이 처리해도 판단과 책임은 나에게 있다.”</li></ul></div>
+      <div class="role"><h4>운영·관리자</h4><ul><li>올바른 운영과 관리</li><li>오류와 편향을 발견해 개선</li><li>사생활 보호, 관리자의 임의적 접근 금지</li></ul></div>
+    </div>
+    <div class="box"><div class="box-title">블랙박스</div>딥러닝의 심층 신경망 안을 들여다볼 수 없어서 인간이 예측하지 못한 의사 결정이 나오는 현상을 <span class="k">블랙박스</span>라고 한다. <span class="pg">p.181</span></div>
+
+    <h3>우리나라 인공지능 윤리 기준 <span class="pg">p.182</span></h3>
+    <div class="box">
+      <p style="margin-top:0">최고 가치: <span class="k">인간성</span></p>
+      <p><b>3대 기본 원칙</b> · <span class="k">인간 존엄성</span> · <span class="k">사회의 공공선</span> · <span class="k">기술의 합목적성</span></p>
+      <p style="margin-bottom:0"><b>10대 핵심 요건</b> · 인권 보장 · 프라이버시 보호 · 다양성 존중 · 침해 금지 · 공공성 · 연대성 · 데이터 관리 · 책임성 · 안전성 · 투명성</p>
+    </div>
+
+    <h3>데이터와 알고리즘의 편향성 <span class="pg">p.183–185</span></h3>
+    <p><span class="k">편향</span>은 어느 한쪽으로 기우는 것이다. 예: 검색 포털에서 ‘professor’를 검색하면 남성이, ‘teacher’를 검색하면 여성이 주로 나온다. 사회의 직업 선택 불균형이 반영된 결과다. <span class="pg">p.183</span></p>
+    <p>좋은 데이터는 다양성, 정확성, 유효성을 갖추어 유용한 가치를 줄 수 있어야 한다. <span class="pg">p.183</span></p>
+    <div class="vs">
+      <div><h4><span class="k">데이터 편향</span> <span class="pg">p.184</span></h4>학습 데이터가 사람이나 사회의 편견을 담고 있는 것.<br><b>원인</b>: 수집하는 사람의 특정 의도, 특정 데이터를 너무 많이 사용, 사용자가 입력한 데이터 학습<br><b>사례</b>: 챗봇 <span class="k">이루다</span></div>
+      <div><h4><span class="k">알고리즘 편향</span> <span class="pg">p.184–185</span></h4>알고리즘을 설계하는 과정에서 생기는 편향.<br><b>원인</b>: 설계자의 편향이 변수·가중치에 반영, 잘못된 라벨링, 관련 없는 변수에 높은 가중치, 가나다·알파벳 순 나열<br><b>사례</b>: 재범 예측 인공지능 <span class="k">컴파스(COMPAS)</span></div>
+    </div>
+    <p>해결 방법: 데이터를 수집·처리·분석·사용하는 모든 과정에서 개발자, 운영 기업, 사용자 모두 윤리 의식을 가진다. 알고리즘의 주요 원칙을 공개하고, 다양한 시뮬레이션으로 사용자가 확인할 수 있는 권리를 보장한다. <span class="pg">p.185</span></p>
+
+    <h3>신뢰 가능한 인공지능을 위한 5가지 원칙 (OECD) <span class="pg">p.185</span></h3>
+    <div class="tw"><table>
+      <thead><tr><th>원칙</th><th>핵심 내용</th></tr></thead>
+      <tbody>
+        <tr><td><span class="k">포용성과 지속 가능성</span></td><td>모든 이해관계자는 인류의 포용 성장, 지속 가능한 발전, 복지 증진을 위해 힘써야 한다.</td></tr>
+        <tr><td><span class="k">인간 중심 가치와 공정성</span></td><td>인공지능 수명 주기 전반에 걸쳐 법률, 인권, 민주적 가치를 존중해야 한다.</td></tr>
+        <tr><td><span class="k">투명성과 설명 가능성</span></td><td>인공지능 시스템에 대한 이해를 높이고 감춰진 것이 없도록 해야 한다.</td></tr>
+        <tr><td><span class="k">견고성과 안전성</span></td><td>전 수명 주기에 걸쳐 견고하게 작동하고, 바람직하지 못한 조건을 견디거나 극복해야 한다.</td></tr>
+        <tr><td><span class="k">책무성</span></td><td>인공지능 활동 주체는 자기 역할에 맞게 시스템이 제대로 작동하도록 책임을 다해야 한다.</td></tr>
+      </tbody>
+    </table></div>
+    <p>인공지능의 사회적 책임은 기업만의 것이 아니라 <span class="k">사회 구성원 모두</span>에게 있다.</p>
+
+    <h3>인공지능으로 인한 윤리적 딜레마 <span class="pg">p.186–189</span></h3>
+    <p><span class="k">윤리적 딜레마</span>: 어떤 선택이나 상황이 동등하게 불만족스러운 두 가지 중에서 하나를 결정해야 하는 경우. 예: 하인츠 딜레마(생명을 살리는 가치 vs 약사의 노력 vs 법을 지키는 가치) <span class="pg">p.186</span></p>
+    <div class="tw"><table>
+      <thead><tr><th>딜레마</th><th>부딪치는 가치</th><th>예</th></tr></thead>
+      <tbody>
+        <tr><td>데이터 수집 <span class="pg">p.186</span></td><td>개인 정보 보호 vs 사회 문제 해결</td><td>자동차 블랙박스 영상으로 범죄자 찾기</td></tr>
+        <tr><td>알고리즘 <span class="pg">p.187</span></td><td>개인 만족·기업 이익 vs 사회·문화 산업</td><td>추천 알고리즘이 만드는 <span class="k">필터 버블</span></td></tr>
+        <tr><td>자율주행 설계 <span class="pg">p.188</span></td><td>다수의 생명 vs 운전자·탑승자 보호</td><td><span class="k">트롤리 딜레마</span>, 모럴 머신</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><span class="k">필터 버블</span>: 정보 제공자가 취향을 분석해 골라 준 정보만 받게 되는 현상. 고정 관념, 사회 파편화, 문화 획일화로 이어질 수 있다. 대처: 검색·시청 기록을 주기적으로 삭제 <span class="pg">p.187</span></li>
+      <li><span class="k">트롤리 딜레마</span>: 5명을 구하기 위해 1명을 희생할 것인가. 사람들은 다수를 살리는 설계에 찬성하면서도, 그런 차를 직접 타는 것에는 부정적이었다. 그래서 기업과 소비자의 의견을 반영한 <span class="k">사회적 합의</span>가 필요하다. <span class="pg">p.188</span></li>
+      <li>모럴 머신: 인공지능의 윤리적 결정에 대한 사회적 인식을 모으는 사이트 <span class="pg">p.189</span></li>
+    </ul>
+
+    <div class="box"><div class="box-title">읽기 자료 <span class="pg">p.190–191</span></div>
+      <ul style="margin:0">
+        <li><b>로봇 3원칙</b>: ① 사람을 해치거나 위험을 내버려 두지 않는다 ② ①에 어긋나지 않는 한 명령에 따른다 ③ ①②에 어긋나지 않는 한 자신을 보호한다</li>
+        <li><b>네오 러다이트 운동</b>: 18세기 영국의 기계 파괴 운동에서 영감을 받은, 기술 발전과 자동화에 비판적인 운동</li>
+        <li><b><span class="k">로봇세</span></b>: 로봇에 세금을 매기는 사회 안전망. 찬성(실직자 재교육 재원, 보안 시스템 자금, 공평한 과세) vs 반대(기술 혁신 저해, 형평성 문제, 기준이 모호함)</li>
+      </ul>
+    </div>
+
+  </section>
+
+  <footer>인공지능 기초 Ⅲ단원 「인공지능의 사회적 영향」 교과서 156~193쪽 내용을 정리했습니다. 쪽수는 교과서 기준입니다.</footer>
+</main>
+
+<script>
+(function(){
+  var box = document.getElementById('study');
+  var reset = document.getElementById('resetBtn');
+  var keys = Array.prototype.slice.call(document.querySelectorAll('.k'));
+  function setStudy(on){
+    document.body.classList.toggle('study', on);
+    reset.hidden = !on;
+    keys.forEach(function(k){
+      k.classList.remove('open');
+      if(on){ k.setAttribute('tabindex','0'); k.setAttribute('role','button'); k.setAttribute('aria-label','가려진 핵심어, 눌러서 보기'); }
+      else { k.removeAttribute('tabindex'); k.removeAttribute('role'); k.removeAttribute('aria-label'); }
+    });
+    try{ localStorage.setItem('ai3-study', on ? '1' : '0'); }catch(e){}
+  }
+  function openKey(k){
+    if(!document.body.classList.contains('study')) return;
+    k.classList.toggle('open');
+    if(k.classList.contains('open')) k.removeAttribute('aria-label'); else k.setAttribute('aria-label','가려진 핵심어, 눌러서 보기');
+  }
+  keys.forEach(function(k){
+    k.addEventListener('click', function(){ openKey(k); });
+    k.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openKey(k); } });
+  });
+  box.addEventListener('change', function(){ setStudy(box.checked); });
+  reset.addEventListener('click', function(){ keys.forEach(function(k){ k.classList.remove('open'); }); });
+  var saved = null;
+  try{ saved = localStorage.getItem('ai3-study'); }catch(e){}
+  if(saved === '1'){ box.checked = true; setStudy(true); }
+})();
+</script>
+</body>
+</html>
